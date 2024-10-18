@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swift-car</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+   <div class="div_icon_swift_car">
+     <img class="icon_swift_car" src= "static/img/logo.png">
+   </div>
+    <div class="part2DisplayCar">
+        <div class="titleCar">Car Price Prediction</div>
+        <div class="textCar">Explore our intuitive car price prediction tool that takes the guesswork out of your vehicle valuation. Enter details such as the type, model, year, and mileage, and let our advanced algorithm provide you with accurate and insightful price predictions. Make informed decisions whether buying or selling, and ensure you get the best value for your automotive investment. Simplify your car pricing experience with our user-friendly platform, where precision meets simplicity.</div>
+        <div class="placeBtn">
+            <button class="btnStart" onclick="scrollByAmount()">Start Prediction</button>
+        </div>
+        <div class="PlaceCarImg">
+            <img src="static/img/desing.png" class="carImg">
+        </div>
+    </div>
+   <div class="div_caracteristic_car_global">
+       <div class="div_caracteristic_car_global_centree">
+           <div class="div_caracteristic_car_unitaire">
+                <div class="iconeCaracteristic"><img src="static/img/speed.png" class="iconeImg"></div>
+                <div class="textCaracteristic">
+                    <div class="Ptext1">+150<span class="smollText">MPH</span></div>
+                    <div class="Ptext2">Top Speed</div>
+                </div>
+           </div>
+           <div class="div_caracteristic_car_unitaire">
+                <div class="iconeCaracteristic"><img src="static/img/person.png" class="iconeImg"></div>
+                <div class="textCaracteristic">
+                    <div class="Ptext1">4<span class="smollText">person</span></div>
+                    <div class="Ptext2">Seating for</div>
+                </div>
+           </div>
+           <div class="div_caracteristic_car_unitaire">
+                <div class="iconeCaracteristic"><img src="static/img/money.png" class="iconeImg"></div>
+                <div class="textCaracteristic">
+                    <div class="Ptext1">$46,595</div>
+                    <div class="Ptext2">Starting at</div>
+                </div>
+           </div>
+       </div>
+   </div>
+
+    <form method="post" accept-charset="UTF-8" class="formPlace">
+        <div class="div_input_select_option_global">
+            <div class="div_input_select_option_global_centree">
+                <div class="div_input_select_option_unitaire">
+                <select class="selector" id="company" name="company" required="1" onchange="load_car_models(this.id,'car_model')">
+                    {% for v in companies %}
+                        <option value="{{v}}">{{v}}</option>
+                    {% endfor %}
+                </select>
+                </div>
+                <div class="div_input_select_option_unitaire">
+                <select class="selector" id="car_model" name="car_model" required="1">
+                    {% for v in car_models %}
+                        <option value="{{v}}">{{v}}</option>
+                    {% endfor %}
+                </select>
+                </div>
+            </div>
+        </div>
+        <div class="div_input_select_option_global">
+            <div class="div_input_select_option_global_centree">
+                <div class="div_input_select_option_unitaire">
+                <select class="selector" id="year" name="year" required="1">
+                    {% for v in years %}
+                        <option value="{{v}}">{{v}}</option>
+                    {% endfor %}
+                </select>
+                </div>
+                <div class="div_input_select_option_unitaire">
+                <select class="selector" id="fuel_type" name="fuel_type" required="1">
+                    {% for v in fuel_types %}
+                        <option value="{{v}}">{{v}}</option>
+                    {% endfor %}
+                </select>
+                </div>
+            </div>
+        </div>
+        <div class="div_input_select_option_global">
+            <div class="div_input_select_option_global_centree">
+                <div class="div_input_select_option_unitaire">
+                <input class="kilo_driven" type="text" id="kilo_driven" name="kilo_driven" placeholder="Enter Kilomiter traveller">
+                </div>
+                <div class="div_input_select_option_unitaire div_center_button">
+                <button class="Predict_button" onclick="send_data()">Predict Price</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="div_prediction_global">
+        <div class="div_prediction_centree" id="prediction" ></div>
+    </div>
+    <div class="copyrightPlace">Copyright Swift-Car 2023</div>
+</body>
+
+<script>
+    function load_car_models(company_id, car_model_id) {
+        var company = document.getElementById(company_id);
+        var car_model = document.getElementById(car_model_id);
+
+        // Clear existing options in car_model dropdown
+        car_model.innerHTML = '';
+        car_model.value='';
+
+        {% for company in companies %}
+            if (company.value == "{{ company }}") {
+                {% for model in car_models %}
+                    {% if company in model %}
+                        var newOption = document.createElement("option");
+                        newOption.value = "{{ model }}";
+                        newOption.innerHTML = "{{ model}}";
+                        car_model.appendChild(newOption);
+                    {% endif %}
+                {% endfor %}
+            }
+        {% endfor %}
+    }
+   function form_handler(event){
+    event.preventDefault();
+}
+
+function send_data(){
+    document.querySelector('form').addEventListener('submit', form_handler);
+    var fd = new FormData(document.querySelector('form'));
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST','/predict',true);
+    document.getElementById("prediction").innerHTML = "Wait! Predicting price...";
+    xhr.onreadystatechange = function()
+    {
+        if(xhr.readyState == XMLHttpRequest.DONE)
+        {
+            document.getElementById("prediction").innerHTML = "Predicting result: $" + ((parseInt(xhr.responseText)*0.015).toFixed(2)).toString();
+        }
+    }
+    xhr.onload=function(){};
+    xhr.send(fd);
+}
+
+</script>
+
+<script src="static/js/script.js"></script>
+</html>
